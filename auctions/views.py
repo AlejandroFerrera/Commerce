@@ -1,8 +1,11 @@
+from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+
+from auctions.forms import ListingForm
 
 from .models import User
 
@@ -60,3 +63,21 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def add_listing(request):
+
+    if request.method == "POST":
+        data = ListingForm(request.POST)
+        if data.is_valid():
+            starting_bid = data.cleaned_data["starting_bid"]
+            data = data.save(commit=False)
+            data.price = starting_bid
+            data.owner = request.user
+
+            data.save()
+
+            return HttpResponseRedirect(reverse("index"))
+            
+
+    form = ListingForm()
+    return render(request, 'auctions/add-listing.html', {'form': form})

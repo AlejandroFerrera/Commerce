@@ -11,7 +11,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.id}: {self.name}"
+        return f"{self.name}"
 
 class Listing(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
