@@ -1,7 +1,46 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
 
-    TODO
+    <h2 class="text-center mb-5">Active Listings</h2>
+
+    <main class="w-75 mx-auto">
+
+        <div class="row row-cols-1 row-cols-md-3">
+    
+            {% for listing in listings %}
+                <div class="col mb-4">
+                    <article class="card h-100">
+                        <img class="card-img-top" src="{{ listing.image_url }}" alt="{{ listing.title }} image">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                            <p class="card-text">{{ listing.description }}</p>
+                            <p class="card-price card-text font-weight-bolder"> ${{ listing.price }}</p>
+                        </div>
+                        <footer class="card-footer d-flex justify-content-between">
+                            <small class="text-muted">{{ listing.category }}</small>
+                            <small class="text-muted">Created {{ listing.created }}</small>
+                        </footer>
+                    </article>
+                </div>
+            {% endfor %}
+    
+        </div>
+    </main>
+
+    <style>
+        article img {
+            height: 250px;
+            object-fit: contain;
+        }
+        .card-price {
+            font-size: larger;
+            color: rgb(255, 79, 79);
+        }
+        .card-text {
+            height: 75%;
+        }
+    </style>
+
+
 {% endblock %}

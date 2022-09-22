@@ -1,21 +1,30 @@
 from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from auctions.forms import ListingForm
 
-from .models import User
+from .models import Listing, User
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+
+    listings = Listing.objects.all()
+
+    return render(request, "auctions/index.html", {'listings': listings})
 
 def login_view(request):
+    
+    #Saving the previous page value from login_required decorator
+    nxt = request.GET.get("next")
+
     if request.method == "POST":
 
+        nxt = request.POST["next"]
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -24,13 +33,13 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return redirect("index") if not nxt else redirect(nxt)
         else:
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "auctions/login.html")
+        return render(request, "auctions/login.html", {'nxt': nxt})
 
 
 def logout_view(request):
@@ -64,20 +73,26 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+@login_required
 def add_listing(request):
+    
+    form = ListingForm()
 
     if request.method == "POST":
         data = ListingForm(request.POST)
+
         if data.is_valid():
             starting_bid = data.cleaned_data["starting_bid"]
             data = data.save(commit=False)
+            
             data.price = starting_bid
             data.owner = request.user
-
-            data.save()
-
-            return HttpResponseRedirect(reverse("index"))
             
+            data.save()
+            return redirect('index')
+        else:
+            return render(request, 'auctions/add-listing.html', {
+                'form': form, 
+                'message': 'Listing isn\'t valid'})
 
-    form = ListingForm()
     return render(request, 'auctions/add-listing.html', {'form': form})
