@@ -1,3 +1,4 @@
+
 from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -18,13 +19,9 @@ def index(request):
     return render(request, "auctions/index.html", {'listings': listings})
 
 def login_view(request):
-    
-    #Saving the previous page value from login_required decorator
-    nxt = request.GET.get("next")
 
     if request.method == "POST":
 
-        nxt = request.POST["next"]
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -33,13 +30,19 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return redirect("index") if not nxt else redirect(nxt)
+
+            #Check if the user came from a protected route
+            if 'next' in request.POST:
+                nxt = request.POST.get("next")
+                return redirect(nxt)
+
+            return redirect("index")
         else:
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "auctions/login.html", {'nxt': nxt})
+        return render(request, "auctions/login.html")
 
 
 def logout_view(request):

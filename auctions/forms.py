@@ -23,7 +23,8 @@ class ListingForm(ModelForm):
                 'rows': '5'
             }),
             'image_url': URLInput(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
+                
             }),
             'category': Select(attrs={
                 'class': 'form-control'

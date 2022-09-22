@@ -1,0 +1,15 @@
+
+.navbar-brand {
+    padding: 0;
+    padding-bottom: 5px;
+}
+
+.nav-link {
+    font-size: larger;
+    color: #231f20;
+}
+
+.nav-link:hover {
+    color: #ff7f00;
+    text-decoration: underline;
+}

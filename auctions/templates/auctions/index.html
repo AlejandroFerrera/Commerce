@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h2 class="text-center mb-5">Active Listings</h2>
+    <h1 class="text-center mb-5">Active Listings</h1>
 
     <main class="w-75 mx-auto">
 
@@ -14,11 +14,11 @@
                         <img class="card-img-top" src="{{ listing.image_url }}" alt="{{ listing.title }} image">
                         <div class="card-body">
                             <h5 class="card-title">{{ listing.title }}</h5>
-                            <p class="card-text">{{ listing.description }}</p>
+                            <p class="card-text text-truncate">{{ listing.description }}</p>
                             <p class="card-price card-text font-weight-bolder"> ${{ listing.price }}</p>
                         </div>
                         <footer class="card-footer d-flex justify-content-between">
-                            <small class="text-muted">{{ listing.category }}</small>
+                            <small class="text-muted"><a href="">{{ listing.category }}</a></small>
                             <small class="text-muted">Created {{ listing.created }}</small>
                         </footer>
                     </article>
@@ -29,16 +29,21 @@
     </main>
 
     <style>
-        article img {
-            height: 250px;
-            object-fit: contain;
+        h1 {
+            color: #231f20;
         }
+        article img {
+            height: 220px;
+            object-fit: contain;
+            padding: 15px;
+        }
+
         .card-price {
             font-size: larger;
-            color: rgb(255, 79, 79);
+            color: #ff7f00;
         }
-        .card-text {
-            height: 75%;
+        .card-footer a {
+            color: inherit;
         }
     </style>
 
