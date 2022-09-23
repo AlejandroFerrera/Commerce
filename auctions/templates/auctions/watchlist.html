@@ -3,7 +3,7 @@
 
 {% block body %}
 
-<h2 class="text-center mb-5">Active Listings</h2>
+<h2 class="text-center mb-5">Your Watchlist</h2>
 
 <main class="w-75 mx-auto">
 
@@ -36,6 +36,8 @@
                     </footer>
                 </article>
             </div>
+        {% empty %}
+            <p>You havn't added anything yet</p>
         {% endfor %}
 
     </div>

@@ -99,3 +99,40 @@ def add_listing(request):
                 'message': 'Listing isn\'t valid'})
 
     return render(request, 'auctions/add-listing.html', {'form': form})
+
+def listing(request, id):
+   
+    
+    if request.method == "POST":
+
+        action = request.POST.get("action")
+        listing_id = request.POST.get("listing_id")
+        listing = Listing.objects.get(id=listing_id)
+
+        if action == 'add':
+            request.user.watchlist.add(listing)
+        elif action == 'remove':
+            request.user.watchlist.remove(listing)
+        
+        return redirect('watchlist')
+
+    
+    listing = Listing.objects.get(id=id)
+    
+    # Check if the user has the listing in his watchlist
+    is_in_user_watchlist = False
+    if request.user.is_authenticated:
+        is_in_user_watchlist = True if request.user.watchlist.filter(id=id).count() == 1 else False
+    
+    return render(request, 'auctions/listing.html', {
+        'listing': listing, 
+        'is_in_user_watchlist': is_in_user_watchlist})
+
+
+def watchlist(request):
+    user = request.user
+    listings = user.watchlist.all()
+
+    return render(request, 'auctions/watchlist.html', {'listings': listings})
+
+

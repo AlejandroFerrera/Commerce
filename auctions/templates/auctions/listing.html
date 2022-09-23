@@ -1,0 +1,92 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block title %}Listing{% endblock %}
+
+{% block body %}
+
+    <main class="w-75 mx-auto">
+        <div class="card mb-3">
+            <div class="row no-gutters">
+              <div class="col-md-4">
+                {% if listing.image_url %}
+                    <img class="h-100 w-100 p-3" src="{{listing.image_url}}" alt="{{listing.title}} image">
+                {% else %}
+                    <img class="h-100 w-100 p-3" src="{% static 'auctions/missing-image.png' %}" alt="{{listing.title}} image">
+                {% endif %}
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title mb-1">{{ listing.title }}</h5>
+                  <p class="card-text mt-0"><small class="text-muted">{{ listing.category}}</small></p>
+                  <p class="description card-text">{{ listing.description }}</p>
+                  <div class="d-flex justify-content-between align-items-center h-50">
+                      <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
+                       
+                      {% if user.is_authenticated and not user.is_anonymous %}
+                      <form method="POST">
+                        {% csrf_token %}
+
+                        {% if is_in_user_watchlist %}
+                            <input class="watchlist-button" type="submit" value="Remove to Watchlist">
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <input type="hidden" name="action" value="remove">
+                        {% else %}
+                            <input class="watchlist-button" type="submit" value="Add to Watchlist">
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <input type="hidden" name="action" value="add">
+                        {% endif %}
+
+                        </form>
+                      {% endif %}
+                  
+                    </div>
+                  <div>
+
+                      <p class="card-text mt-3">Current Bid: <span>${{ listing.price }}</span></p>
+                  </div>
+                  <p class="card-text"><small class="text-muted">Last bid 3 mins ago by @ale</small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+    </main>
+
+    <style>
+        .card {
+            border: none;
+        }
+        .card img {
+            object-fit: contain;
+            max-height: 300px;
+        }
+        .card-title {
+            font-size: 60px;
+        }
+        .card-text {
+            font-size: 20px;
+            margin-left: 4px;
+        }
+        .description {
+            color: rgb(69, 54, 38);
+        }
+
+        p span {
+            color: #ff7f00;
+        }
+        .watchlist-button {
+            background-color: white;
+            color: #ff7f00;
+            border: 2px solid #ff7f00;
+            border-radius: 100px;
+            padding: 5px 20px;
+        }
+        .watchlist-button:hover {
+            color: white;
+            background-color: #ff7f00;
+        }
+        .h-50 {
+            height: 50px !important;
+        }
+    </style>
+{% endblock %}
