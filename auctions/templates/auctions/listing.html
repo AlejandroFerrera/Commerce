@@ -23,12 +23,12 @@
                   <div class="d-flex justify-content-between align-items-center h-50">
                       <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
                        
-                      {% if user.is_authenticated and not user.is_anonymous %}
+                      {% if user.is_authenticated %}
                       <form method="POST">
                         {% csrf_token %}
 
                         {% if is_in_user_watchlist %}
-                            <input class="watchlist-button" type="submit" value="Remove to Watchlist">
+                            <input class="watchlist-button" type="submit" value="Remove from Watchlist">
                             <input type="hidden" name="listing_id" value="{{ listing.id }}">
                             <input type="hidden" name="action" value="remove">
                         {% else %}
