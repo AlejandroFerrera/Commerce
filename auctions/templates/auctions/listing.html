@@ -6,6 +6,16 @@
 {% block body %}
 
     <main class="w-75 mx-auto">
+
+        {% if not listing.active %}
+            <div class="alert alert-warning">
+                This listing is no longer active.
+            </div>
+            {% if request.user == listing.winner %}
+                <div class="alert alert-info">Congratulations {{ listing.winner }}, you have won the auction with a ${{ last_bid.amount }} bid</div>
+            {% endif %}
+        {% endif %}
+
         <div class="card mb-3">
             <div class="row no-gutters">
               <div class="col-md-4">
@@ -23,7 +33,7 @@
                   <div class="d-flex justify-content-between align-items-center h-50">
                       <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
                        
-                      {% if user.is_authenticated %}
+                      {% if user.is_authenticated and listing.active %}
                       <form method="POST">
                         {% csrf_token %}
                         {% if is_in_user_watchlist %}
@@ -40,11 +50,23 @@
                       {% endif %}
                       
                     </div>
-                    <p class="card-text mt-3 mb-1">Current Bid: <span>${{ listing.price }}</span></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="card-text mt-3 mb-1">Current Bid: <span>${{ listing.price }}</span></p>
+
+                        {% if request.user == listing.owner and listing.active %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="submit" class="close-listing-button" value="Close Listing">
+                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                <input type="hidden" name="action" value="close">
+                            </form>
+                        {% endif %}
+
+                    </div>
                     {% if last_bid %}
                         <p class="card-text">
                             <small class="text-muted">
-                                <strong>{{ count_bids }} bid</strong> so far.
+                                <strong>{{ count_bids }} bid(s)</strong> so far.
                             </small>
                             <small class="text-muted">
                                 Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by 
@@ -73,16 +95,19 @@
                     {% endif %}
 
                   <div class="d-flex justify-content-between align-items-center">
-                      <form method="POST">
-                        {% csrf_token %}
-                        <div class="form-group d-flex flex-column">
-                            <input class="mt-2" placeholder="$999.99" type="number" name="bid" id="bid-input" required>
-                            <small class="text-muted ml-1">You must bid higher than the current price.</small>
-                        </div>
-                        <input class="btn btn-primary w-100" type="submit" value="Place bid" id="bid-button">
-                        <input type="hidden" name="action" value="bid">
-                        <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                      </form>
+                        {% if user.is_authenticated and listing.active %}
+                        <form method="POST">
+                          {% csrf_token %}
+                          <div class="form-group d-flex flex-column">
+                              <input class="mt-2" placeholder="$999.99" type="number" name="bid" id="bid-input" required>
+                              <small class="text-muted ml-1">You must bid higher than the current price.</small>
+                          </div>
+                          <input class="btn btn-primary w-100" type="submit" value="Place bid" id="bid-button">
+                          <input type="hidden" name="action" value="bid">
+                          <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                        </form>
+
+                        {% endif %}
                   </div>
                 </div>
               </div>
@@ -113,6 +138,7 @@
             color: #ff7f00;
         }
         .watchlist-button {
+            width: 210px;
             background-color: white;
             color: #ff7f00;
             border: 2px solid #ff7f00;
@@ -145,6 +171,19 @@
             list-style: none;
             margin: 0;
             padding: 0;
+        }
+
+        .close-listing-button {
+            width: 210px;
+            background-color: white;
+            color: rgb(255, 69, 69);
+            border: 2px solid #ff2727;
+            border-radius: 100px;
+            padding: 5px 20px;
+        }
+        .close-listing-button:hover {
+            color: white;
+            background-color: rgb(255, 69, 69);
         }
     </style>
 {% endblock %}

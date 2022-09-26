@@ -133,6 +133,17 @@ def listing(request, id):
             messages.success(request, "Bid succefully added")
 
             return redirect('listing', id)
+        elif action == 'close':
+
+            has_bids = Bid.objects.filter(listing=listing).count() > 0
+            if not has_bids:
+                messages.error(request, "You can't close the listing because it hasn't any bids.")
+                return redirect('listing', id)
+            
+            winner = Bid.objects.filter(listing=listing).last().user
+            listing.winner = winner
+            listing.active = False
+            listing.save()
 
     listing = Listing.objects.get(id=id)
     
@@ -143,7 +154,6 @@ def listing(request, id):
     
     last_bid = Bid.objects.filter(listing=listing).last()
     count_bids = Bid.objects.filter(listing=listing).count()
-    print(last_bid)
     
     return render(request, 'auctions/listing.html', {
         'listing': listing, 
