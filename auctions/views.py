@@ -6,10 +6,11 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
 
 from auctions.forms import ListingForm
 
-from .models import Listing, User
+from .models import Bid, Listing, User
 
 
 def index(request):
@@ -111,12 +112,28 @@ def listing(request, id):
 
         if action == 'add':
             request.user.watchlist.add(listing)
+            return redirect('watchlist')
         elif action == 'remove':
             request.user.watchlist.remove(listing)
-        
-        return redirect('watchlist')
+            return redirect('watchlist')
+        elif action == 'bid':
+            current_price = listing.price
+            bid = int(request.POST.get("bid"))
 
-    
+            if bid <= current_price:
+                messages.error(request, f"We're sorry, your bid must be greater than ${current_price}")
+                return redirect('listing',id)
+            
+            #Updating the listing price
+            listing.price = bid
+            listing.save()
+            #Saving the bid
+            bid = Bid(user=request.user, listing=listing, amount=bid)
+            bid.save()
+            messages.success(request, "Bid succefully added")
+
+            return redirect('listing', id)
+
     listing = Listing.objects.get(id=id)
     
     # Check if the user has the listing in his watchlist
@@ -124,9 +141,13 @@ def listing(request, id):
     if request.user.is_authenticated:
         is_in_user_watchlist = True if request.user.watchlist.filter(id=id).count() == 1 else False
     
+    last_bid = Bid.objects.filter(listing=listing).last()
+    print(last_bid)
+    
     return render(request, 'auctions/listing.html', {
         'listing': listing, 
-        'is_in_user_watchlist': is_in_user_watchlist})
+        'is_in_user_watchlist': is_in_user_watchlist,
+        'last_bid': last_bid})
 
 
 def watchlist(request):

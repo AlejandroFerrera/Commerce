@@ -37,7 +37,10 @@
                 </article>
             </div>
         {% empty %}
-            <p>You havn't added anything yet</p>
+            <div class="w-100 mx-auto empty-watchlist d-flex justify-content-center align-items-center">
+                <img src="{% static 'auctions/empty.png' %}" alt="empty-icon">
+                <p class="w-75 mx-auto text-center text-info f-3 no-items">You havn't added anything yet</p>
+            </div>
         {% endfor %}
 
     </div>
@@ -65,6 +68,14 @@
 
     .card-footer a {
         color: inherit;
+    }
+    .empty-watchlist img {
+        height: 60px;
+        object-fit: contain;
+    }
+    .empty-watchlist p {
+        font-size: larger;
+        margin: 0;
     }
 
 </style>

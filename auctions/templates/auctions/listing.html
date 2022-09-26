@@ -26,7 +26,6 @@
                       {% if user.is_authenticated %}
                       <form method="POST">
                         {% csrf_token %}
-
                         {% if is_in_user_watchlist %}
                             <input class="watchlist-button" type="submit" value="Remove from Watchlist">
                             <input type="hidden" name="listing_id" value="{{ listing.id }}">
@@ -37,15 +36,46 @@
                             <input type="hidden" name="action" value="add">
                         {% endif %}
 
-                        </form>
+                        </form> 
                       {% endif %}
-                  
+                      
                     </div>
-                  <div>
+                    <p class="card-text mt-3 mb-1">Current Bid: <span>${{ listing.price }}</span></p>
+                    {% if last_bid %}
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by {{ last_bid.user }}
+                            </small>
+                        </p>
+                    {% else %}
+                        <p class="card-text"><small class="text-muted">This listing hasn't any bid yet.</small></p>
+                    {% endif %}
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            {% if message.level == 25 %}
+                                <div class="alert alert-success">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
 
-                      <p class="card-text mt-3">Current Bid: <span>${{ listing.price }}</span></p>
+                  <div class="d-flex justify-content-between align-items-center">
+                      <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group d-flex flex-column">
+                            <input class="mt-2" placeholder="$999.99" type="number" name="bid" id="bid-input" required>
+                            <small class="text-muted ml-1">You must bid higher than the current price.</small>
+                        </div>
+                        <input class="btn btn-primary w-100" type="submit" value="Place bid" id="bid-button">
+                        <input type="hidden" name="action" value="bid">
+                        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                      </form>
                   </div>
-                  <p class="card-text"><small class="text-muted">Last bid 3 mins ago by @ale</small></p>
                 </div>
               </div>
             </div>
@@ -71,7 +101,7 @@
             color: rgb(69, 54, 38);
         }
 
-        p span {
+        p span, small span {
             color: #ff7f00;
         }
         .watchlist-button {
@@ -87,6 +117,26 @@
         }
         .h-50 {
             height: 50px !important;
+        }
+        #bid-input {
+            border-radius: 0;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid grey;
+        }
+
+        #bid-input:focus {
+            box-shadow: none;
+            border-bottom: 2px solid #ff7f00;
+        }
+        p small span {
+            color: inherit;
+        }
+
+        .messages {
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
     </style>
 {% endblock %}
