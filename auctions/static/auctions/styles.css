@@ -12,7 +12,7 @@ input[type=number] { -moz-appearance:textfield; }
 }
 
 .nav-link {
-    font-size: larger;
+    font-size: 21px;
     color: #231f20;
 }
 

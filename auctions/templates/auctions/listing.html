@@ -44,7 +44,15 @@
                     {% if last_bid %}
                         <p class="card-text">
                             <small class="text-muted">
-                                Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by {{ last_bid.user }}
+                                <strong>{{ count_bids }} bid</strong> so far.
+                            </small>
+                            <small class="text-muted">
+                                Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by 
+                                {% if last_bid.user == request.user %}
+                                    you.
+                                {% else %}
+                                    {{ last_bid.user }}.
+                                {% endif %}
                             </small>
                         </p>
                     {% else %}

@@ -142,12 +142,14 @@ def listing(request, id):
         is_in_user_watchlist = True if request.user.watchlist.filter(id=id).count() == 1 else False
     
     last_bid = Bid.objects.filter(listing=listing).last()
+    count_bids = Bid.objects.filter(listing=listing).count()
     print(last_bid)
     
     return render(request, 'auctions/listing.html', {
         'listing': listing, 
         'is_in_user_watchlist': is_in_user_watchlist,
-        'last_bid': last_bid})
+        'last_bid': last_bid,
+        'count_bids': count_bids})
 
 
 def watchlist(request):
