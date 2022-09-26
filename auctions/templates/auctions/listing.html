@@ -6,114 +6,154 @@
 {% block body %}
 
     <main class="w-75 mx-auto">
-
-        {% if not listing.active %}
-            <div class="alert alert-warning">
-                This listing is no longer active.
-            </div>
-            {% if request.user == listing.winner %}
+        
+        <section class="alerts">
+            {% if not listing.active %}
+                <div class="alert alert-warning">
+                    This listing is no longer active.
+                </div>
+                {% if request.user == listing.winner %}
                 <div class="alert alert-info">Congratulations {{ listing.winner }}, you have won the auction with a ${{ last_bid.amount }} bid</div>
-            {% endif %}
-        {% endif %}
-
-        <div class="card mb-3">
-            <div class="row no-gutters">
-              <div class="col-md-4">
-                {% if listing.image_url %}
-                    <img class="h-100 w-100 p-3" src="{{listing.image_url}}" alt="{{listing.title}} image">
-                {% else %}
-                    <img class="h-100 w-100 p-3" src="{% static 'auctions/missing-image.png' %}" alt="{{listing.title}} image">
                 {% endif %}
-              </div>
-              <div class="col-md-8">
-                <div class="card-body">
-                  <h5 class="card-title mb-1">{{ listing.title }}</h5>
-                  <p class="card-text mt-0"><small class="text-muted">{{ listing.category}}</small></p>
-                  <p class="description card-text">{{ listing.description }}</p>
-                  <div class="d-flex justify-content-between align-items-center h-50">
-                      <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
-                       
-                      {% if user.is_authenticated and listing.active %}
-                      <form method="POST">
-                        {% csrf_token %}
-                        {% if is_in_user_watchlist %}
-                            <input class="watchlist-button" type="submit" value="Remove from Watchlist">
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <input type="hidden" name="action" value="remove">
-                        {% else %}
-                            <input class="watchlist-button" type="submit" value="Add to Watchlist">
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <input type="hidden" name="action" value="add">
-                        {% endif %}
+            {% endif %}
+        </section>
 
-                        </form> 
-                      {% endif %}
-                      
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="card-text mt-3 mb-1">Current Bid: <span>${{ listing.price }}</span></p>
-
-                        {% if request.user == listing.owner and listing.active %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <input type="submit" class="close-listing-button" value="Close Listing">
-                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                <input type="hidden" name="action" value="close">
-                            </form>
-                        {% endif %}
-
-                    </div>
-                    {% if last_bid %}
-                        <p class="card-text">
-                            <small class="text-muted">
-                                <strong>{{ count_bids }} bid(s)</strong> so far.
-                            </small>
-                            <small class="text-muted">
-                                Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by 
-                                {% if last_bid.user == request.user %}
-                                    you.
-                                {% else %}
-                                    {{ last_bid.user }}.
-                                {% endif %}
-                            </small>
-                        </p>
+        <section class="listing-details-forms">
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                  <div class="col-md-4">
+                    {% if listing.image_url %}
+                        <img class="h-100 w-100 p-3" src="{{listing.image_url}}" alt="{{listing.title}} image">
                     {% else %}
-                        <p class="card-text"><small class="text-muted">This listing hasn't any bid yet.</small></p>
+                        <img class="h-100 w-100 p-3" src="{% static 'auctions/missing-image.png' %}" alt="{{listing.title}} image">
                     {% endif %}
-                    {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                            {% if message.level == 25 %}
-                                <div class="alert alert-success">{{ message }}</div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title mb-1">{{ listing.title }}</h5>
+                      <p class="card-text mt-0"><small class="text-muted">{{ listing.category}}</small></p>
+                      <p class="description card-text">{{ listing.description }}</p>
+                      <div class="d-flex justify-content-between align-items-center h-50">
+                          <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
+                           
+                          {% if user.is_authenticated and listing.active %}
+                          <form method="POST">
+                            {% csrf_token %}
+                            {% if is_in_user_watchlist %}
+                                <input class="watchlist-button" type="submit" value="Remove from Watchlist">
+                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                <input type="hidden" name="action" value="remove">
                             {% else %}
-                                <div class="alert alert-danger">{{ message }}</div>
+                                <input class="watchlist-button" type="submit" value="Add to Watchlist">
+                                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                <input type="hidden" name="action" value="add">
                             {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-
-                  <div class="d-flex justify-content-between align-items-center">
-                        {% if user.is_authenticated and listing.active %}
-                        <form method="POST">
-                          {% csrf_token %}
-                          <div class="form-group d-flex flex-column">
-                              <input class="mt-2" placeholder="$999.99" type="number" name="bid" id="bid-input" required>
-                              <small class="text-muted ml-1">You must bid higher than the current price.</small>
-                          </div>
-                          <input class="btn btn-primary w-100" type="submit" value="Place bid" id="bid-button">
-                          <input type="hidden" name="action" value="bid">
-                          <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                        </form>
-
+    
+                            </form> 
+                          {% endif %}
+                          
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            {% if listing.active %}
+                                <p class="card-text mt-3 mb-1">Current Bid: <span>${{ listing.price }}</span></p>
+                            {% else %}
+                                <p class="card-text mt-3 mb-1">Winner Bid: <span>${{ listing.price }}</span></p
+                            {% endif %}
+                                            
+                            {% if request.user == listing.owner and listing.active %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" class="close-listing-button" value="Close Listing">
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <input type="hidden" name="action" value="close">
+                                </form>
+                            {% endif %}
+    
+                        </div>
+                        {% if listing.active %}
+                            {% if last_bid %}
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <strong>{{ count_bids }} bid(s)</strong> so far.
+                                    </small>
+                                    <small class="text-muted">
+                                        Last bid <span class="font-italic">{{last_bid.last_bided | timesince }}</span> ago by 
+                                        {% if last_bid.user == request.user %}
+                                            you.
+                                        {% else %}
+                                            {{ last_bid.user }}.
+                                        {% endif %}
+                                    </small>
+                                </p>
+                            {% else %}
+                                <p class="card-text"><small class="text-muted">This listing hasn't any bid yet.</small></p>
+                            {% endif %}
                         {% endif %}
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                                {% if message.level == 25 %}
+                                    <div class="alert alert-success">{{ message }}</div>
+                                {% else %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+    
+                      <div class="d-flex justify-content-between align-items-center">
+                            {% if user.is_authenticated and listing.active and listing.owner != request.user %}
+                            <form method="POST">
+                              {% csrf_token %}
+                              <div class="form-group d-flex flex-column">
+                                  <input class="mt-2" placeholder="$999.99" type="number" name="bid" id="bid-input" required>
+                                  <small class="text-muted ml-1">You must bid higher than the current price.</small>
+                              </div>
+                              <input class="btn btn-primary w-100" type="submit" value="Place bid" id="bid-button">
+                              <input type="hidden" name="action" value="bid">
+                              <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            </form>
+    
+                            {% endif %}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+        </section>
+
+        <section class="comments">
+            <header class="w-100 comment-heading mb-3">
+                <h1 class="m-0">Comments</h1>
+                <small class="text-muted ml-1">3 comment(s) so far.</small>
+            </header>
+
+            <div class="coments-container w-75 mx-auto">
+                <form method="POST" class="add-coment-input">
+                    {% csrf_token %}
+                        <input class="form-control d-inline" type="text" name="comment-text" id="comment-text" placeholder="Type your comment here..." required>
+
+                    <input type="hidden" name="action" value="comment">
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                </form>
+
+                <div class="listing-comments mt-4">
+                    {% for comment in comments %}
+                        <p class="font-weight-bold">{{ comment.user }}</p>
+                        <p>{{ comment.text }}</p>
+                        <small class="text-muted">Comment made {{ comment.created | timesince }} ago.</small>
+                        <hr class="mt-0">
+                    {% endfor %}
+                </div>
             </div>
-          </div>
-    </main>
+        </section>
+
+
+            
+
+        </main>
 
     <style>
         .card {
@@ -185,5 +225,15 @@
             color: white;
             background-color: rgb(255, 69, 69);
         }
+
+        .comment-heading {
+            border-bottom: 2px solid #ff80007b;
+        }
+
+        .listing-comments p {
+            margin: 0;
+        }
+
+        
     </style>
 {% endblock %}

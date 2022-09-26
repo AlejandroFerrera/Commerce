@@ -1,5 +1,6 @@
 
 from urllib.request import Request
+from xml.etree.ElementTree import Comment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -10,7 +11,7 @@ from django.contrib import messages
 
 from auctions.forms import ListingForm
 
-from .models import Bid, Listing, User
+from .models import Bid, Listing, User, Comment
 
 
 def index(request):
@@ -144,6 +145,11 @@ def listing(request, id):
             listing.winner = winner
             listing.active = False
             listing.save()
+        elif action == 'comment':
+            text = request.POST.get('comment-text')
+            comment = Comment(listing=listing, user=request.user, text=text)
+            comment.save()
+            return redirect('listing', id)
 
     listing = Listing.objects.get(id=id)
     
@@ -154,12 +160,15 @@ def listing(request, id):
     
     last_bid = Bid.objects.filter(listing=listing).last()
     count_bids = Bid.objects.filter(listing=listing).count()
-    
+
+    comments = Comment.objects.filter(listing=listing).order_by('-created')
+
     return render(request, 'auctions/listing.html', {
         'listing': listing, 
         'is_in_user_watchlist': is_in_user_watchlist,
         'last_bid': last_bid,
-        'count_bids': count_bids})
+        'count_bids': count_bids,
+        'comments': comments})
 
 
 def watchlist(request):
