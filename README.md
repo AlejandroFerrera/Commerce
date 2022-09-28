@@ -1,7 +1,7 @@
 # Commerce
 C50W Project, Commerce auction site like e-bay. I made a video demonstration in my local environment until I deploy the application.
 
-You can see it here: https://www.youtube.com/watch?v=H1UpbGSvrrA
+You can see it here: <a href="https://www.youtube.com/watch?v=H1UpbGSvrrA" target="_blank">Auctions video presentation</a> 
 
 ## Database Design:
 
