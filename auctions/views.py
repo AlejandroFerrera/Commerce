@@ -1,17 +1,16 @@
 
-from urllib.request import Request
 from xml.etree.ElementTree import Comment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 
 from auctions.forms import ListingForm
 
-from .models import Bid, Listing, User, Comment
+from .models import Bid, Category, Listing, User, Comment
 
 
 def index(request):
@@ -145,6 +144,7 @@ def listing(request, id):
             listing.winner = winner
             listing.active = False
             listing.save()
+        
         elif action == 'comment':
             text = request.POST.get('comment-text')
             comment = Comment(listing=listing, user=request.user, text=text)
@@ -162,15 +162,17 @@ def listing(request, id):
     count_bids = Bid.objects.filter(listing=listing).count()
 
     comments = Comment.objects.filter(listing=listing).order_by('-created')
+    count_comments = Comment.objects.filter(listing=listing).count()
 
     return render(request, 'auctions/listing.html', {
         'listing': listing, 
         'is_in_user_watchlist': is_in_user_watchlist,
         'last_bid': last_bid,
         'count_bids': count_bids,
-        'comments': comments})
+        'comments': comments,
+        'count_comments': count_comments})
 
-
+@login_required
 def watchlist(request):
     user = request.user
     listings = user.watchlist.all()
@@ -178,3 +180,14 @@ def watchlist(request):
     return render(request, 'auctions/watchlist.html', {'listings': listings})
 
 
+def categories(request):
+    categories = Category.objects.all()
+    return render(request, 'auctions/categories.html', {'categories': categories})
+
+
+def category(request, id):
+    category = Category.objects.get(id=id)
+    listings = Listing.objects.filter(category=category)
+    return render(request, 'auctions/category.html', {
+        'category':category,
+        'listings': listings})

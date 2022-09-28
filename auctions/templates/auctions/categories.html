@@ -1,0 +1,46 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Categories{% endblock %}
+
+{% block body %}
+
+    <h2 class="text-center mb-3">All categories</h2>
+
+    <div class="row w-75 mx-auto">
+
+        {% for category in categories %}
+            <div class= "col-lg-6">
+            <a href="{% url 'category' category.id %}" class="card m-4">
+                <div class="card-body d-flex justify-content-between align-items-center ">
+                    <h3 class="card-title m-0 text-monospace">{{ category.name }}</h3>
+                    <img src="{{ category.image_url }}" alt="category image">
+                </div>
+            </a>
+            </div>
+        {% endfor %}
+
+      </div>
+
+      <style>
+        .card {
+            text-decoration: none;
+            color: inherit;
+        }
+        .card:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card img {
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .card:hover {
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+            transform: scale(1.005);
+            transition: all 0.1s linear;
+            cursor: pointer;
+        }
+      </style>
+{% endblock %}

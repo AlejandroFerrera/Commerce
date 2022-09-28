@@ -1,0 +1,71 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h2 class="text-center mb-5">{{ category.name | title }} Listings</h2>
+
+<main class="w-75 mx-auto">
+
+    <div class="row row-cols-1 row-cols-md-3">
+
+        {% for listing in listings %}
+            <div class="col mb-4">
+                <article class="card h-100">
+                    {% if listing.image_url %}
+                        <a href="{% url 'listing' listing.id %}">
+                            <img class="card-img-top" src="{{ listing.image_url }}" alt="{{ listing.title }} image">
+                        </a>
+                    {% else %}
+                        <a href="{% url 'listing' listing.id %}">
+                            <img class="card-img-top" src="{% static 'auctions/missing-image.png' %}" alt="missing-image">
+                        </a>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <a href="{% url 'listing' listing.id %}">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                        </a>  
+                        <p class="card-text text-truncate">{{ listing.description }}</p>
+                        <p class="card-price card-text font-weight-bolder"> ${{ listing.price }}</p>
+                    </div>
+
+                    <footer class="card-footer d-flex justify-content-between">
+                        <small class="text-muted"><a href="">{{ listing.category }}</a></small>
+                        <small class="text-muted">Created {{ listing.created }}</small>
+                    </footer>
+                </article>
+            </div>
+        {% endfor %}
+
+    </div>
+</main>
+
+<style>
+    h1 {
+        color: #231f20;
+    }
+
+    article a img {
+        height: 220px;
+        object-fit: contain;
+        padding: 15px;
+    }
+
+    .card-price {
+        font-size: larger;
+        color: #ff7f00;
+    }
+
+    .card-body a {
+        color: #231f20;
+    }
+
+    .card-footer a {
+        color: inherit;
+    }
+
+</style>
+
+
+{% endblock %}

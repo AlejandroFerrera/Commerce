@@ -31,12 +31,12 @@
                   <div class="col-md-8">
                     <div class="card-body">
                       <h5 class="card-title mb-1">{{ listing.title }}</h5>
-                      <p class="card-text mt-0"><small class="text-muted">{{ listing.category}}</small></p>
+                      <p class="card-text mt-0"><small class="text-muted">{{ listing.category.name }}</small></p>
                       <p class="description card-text">{{ listing.description }}</p>
                       <div class="d-flex justify-content-between align-items-center h-50">
                           <p class="card-text mb-0">Started Bid: <span>${{ listing.starting_bid }}</span></p>
                            
-                          {% if user.is_authenticated and listing.active %}
+                          {% if user.is_authenticated and listing.active and user != listing.owner %}
                           <form method="POST">
                             {% csrf_token %}
                             {% if is_in_user_watchlist %}
@@ -124,24 +124,28 @@
               </div>
         </section>
 
+        {% if listing.active %}
         <section class="comments">
             <header class="w-100 comment-heading mb-3">
                 <h1 class="m-0">Comments</h1>
-                <small class="text-muted ml-1">3 comment(s) so far.</small>
+                <small class="text-muted ml-1">{{count_comments}} comment(s) so far.</small>
             </header>
 
             <div class="coments-container w-75 mx-auto">
-                <form method="POST" class="add-coment-input">
-                    {% csrf_token %}
-                        <input class="form-control d-inline" type="text" name="comment-text" id="comment-text" placeholder="Type your comment here..." required>
 
-                    <input type="hidden" name="action" value="comment">
-                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                </form>
+                {% if request.user.is_authenticated %}
+                    <form method="POST" class="add-coment-input">
+                        {% csrf_token %}
+                            <input class="form-control d-inline" type="text" name="comment-text" id="comment-text" placeholder="Type your comment here..." required>
+                            <input type="hidden" name="action" value="comment">
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                    </form>
+                {% endif %}
+
 
                 <div class="listing-comments mt-4">
                     {% for comment in comments %}
-                        <p class="font-weight-bold">{{ comment.user }}</p>
+                        <p class="font-weight-bold text-primary">{{ comment.user }}</p>
                         <p>{{ comment.text }}</p>
                         <small class="text-muted">Comment made {{ comment.created | timesince }} ago.</small>
                         <hr class="mt-0">
@@ -149,6 +153,7 @@
                 </div>
             </div>
         </section>
+        {% endif %}
 
 
             
