@@ -1,5 +1,5 @@
 # Commerce
-C50W Project, Commerce auction site like e-bay. I made a video demonstration in my local environment until I deploy the application.
+C50W Project, Commerce auction site like e-bay built in Django. I made a video demonstration in my local environment until I deploy the application.
 
 You can see it here: https://www.youtube.com/watch?v=H1UpbGSvrrA
 
